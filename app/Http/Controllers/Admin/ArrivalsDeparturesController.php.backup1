@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Gate;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
+
+class ArrivalsDeparturesController extends Controller
+{
+    public function index()
+    {
+        abort_if(Gate::denies('arrivals_departure_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+         $Arrivals = DB::table('create_vouchers')
+            ->select('id', 'client_name', 'night', 'hotel_name_id', 'arrivaldate')
+            ->whereDate('arrivaldate', now())
+            ->get();
+
+        $Departures =  DB::table('create_vouchers')
+            ->select('id', 'client_name', 'night', 'hotel_name_id', 'departuredate')
+            ->whereDate('departuredate', now())
+            ->get();
+        return view('admin.arrivalsDepartures.index', compact('Arrivals', 'Departures'));
+    }
+}
